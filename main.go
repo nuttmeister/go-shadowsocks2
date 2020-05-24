@@ -13,6 +13,10 @@ import (
 
 // Constants.
 const (
+	minPortNo       = 10000 // Min port to be allowed
+	maxPortNo       = 19999 // Max port to be allowed
+	ssPortIncrement = 10000 // ssPort = port + ssPortIncrement
+
 	listen  = "127.0.0.1"             // Ip that v2ray will listen to.
 	forward = "127.0.0.1"             // Ip that v2ray will relay to.
 	v2ray   = "/usr/bin/v2ray-plugin" // The location of v2ray-plugin.
@@ -27,21 +31,18 @@ var cfg *config
 type config struct {
 	// General
 	FullHost string `env:"FULL_HOST" required:"true"`
-	Verbose  bool   `env:"VERBOSE" default:"false"`
-
-	// Shadowsocks config.
-	Cipher   string `env:"SS_CIPHER" required:"true"`
-	Password string `env:"SS_PASSWORD" required:"true"`
-	Port     int    `env:"SS_PORT" required:"true"`
-
-	// V2Ray config.
-	V2Ray     bool `env:"V2RAY_ENABLED" default:"false"`
-	V2RayPort int  `env:"V2RAY_PORT"`
+	Cipher   string `env:"CIPHER" required:"true"`
+	Password string `env:"PASSWORD" required:"true"`
+	Port     int    `env:"PORT" required:"true"`
+	ssPort   int
 
 	// Bloom config.
 	BloomCapacity int     `env:"BLOOM_CAPACITY" default:"1000000"`
 	BloomFPR      float64 `env:"BLOOM_FPR" default:"0.000001"`
 	BloomSlot     int     `env:"BLOOM_SLOT" default:"10"`
+
+	// Debug
+	Verbose bool `env:"VERBOSE" default:"false"`
 }
 
 func main() {
@@ -50,8 +51,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Start v2ray if it's configured.
-	if err := cfg.startV2Ray(); err != nil {
+	// Start v2ray.
+	if err := cfg.startV2Ray(ssPort); err != nil {
 		log.Fatal(err)
 	}
 
@@ -62,7 +63,7 @@ func main() {
 	}
 
 	// Start the tcp listener.
-	go tcpRemote(cfg.Port, ciph.StreamConn)
+	go tcpRemote(ssPort, ciph.StreamConn)
 
 	// Listen for exit and error to quit.
 	sigCh := make(chan os.Signal, 1)
@@ -79,21 +80,18 @@ func configure() error {
 		return err
 	}
 
-	// Check if V2Ray was enabled but port not set.
-	if cfg.V2Ray && cfg.V2RayPort == 0 {
-		return fmt.Errorf("v2ray-plugin enabled but port not configured")
+	// Check that the ports are within range.
+	if cfg.Port < minPortNo || cfg.Port > maxPortNo {
+		return fmt.Errorf("port is not within the allowed range")
 	}
+	cfg.ssPort = cfg.Port + ssPortIncrement
 
 	return nil
 }
 
 // plugin will start any configured plugins.
 // Returns error.
-func (cfg *config) startV2Ray() error {
-	if !cfg.V2Ray {
-		return nil
-	}
-
+func (cfg *config) startV2Ray(ssPort int) error {
 	// Set loglevel to none or debug.
 	loglevel := "none"
 	if cfg.Verbose {
@@ -101,6 +99,6 @@ func (cfg *config) startV2Ray() error {
 	}
 
 	// Start the plugin.
-	opts := fmt.Sprintf(v2rayOpts, cfg.FullHost, cfg.V2RayPort, loglevel)
-	return startPlugin(v2ray, opts, cfg.V2RayPort, cfg.Port)
+	opts := fmt.Sprintf(v2rayOpts, cfg.FullHost, cfg.Port, loglevel)
+	return startPlugin(v2ray, opts, cfg.Port, ssPort)
 }
