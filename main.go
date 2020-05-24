@@ -37,12 +37,12 @@ type config struct {
 	ssPort   int
 
 	// Bloom config.
-	BloomCapacity int     `env:"BLOOM_CAPACITY" default:"1000000"`
-	BloomFPR      float64 `env:"BLOOM_FPR" default:"0.000001"`
-	BloomSlot     int     `env:"BLOOM_SLOT" default:"10"`
+	BloomCapacity int     `env:"BLOOM_CAPACITY" default:1000000`
+	BloomFPR      float64 `env:"BLOOM_FPR" default:0.000001`
+	BloomSlot     int     `env:"BLOOM_SLOT" default:10`
 
 	// Debug
-	Verbose bool `env:"VERBOSE" default:"false"`
+	Verbose bool `env:"VERBOSE" default:false`
 }
 
 func main() {
