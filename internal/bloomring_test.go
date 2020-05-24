@@ -8,12 +8,6 @@ import (
 	"github.com/nuttmeister/go-shadowsocks2/internal"
 )
 
-const (
-	defBloomCapacity = 1000000  // Default Capacity
-	defBloomFPR      = 0.000001 // Default False Positive Rate
-	defBloomSlot     = 10       // Default Slot
-)
-
 var (
 	bloomRingInstance *internal.BloomRing
 )

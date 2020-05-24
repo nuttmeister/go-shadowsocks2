@@ -3,8 +3,18 @@ package internal
 // A shared instance used for checking salt repeat
 var saltfilter *BloomRing
 
-// Setup will setup the bloom filter.
-func Setup(slot int, capacity int, fpr float64) {
+const (
+	defBloomCapacity = 1000000  // Default Capacity
+	defBloomFPR      = 0.000001 // Default False Positive Rate
+	defBloomSlot     = 10       // Default Slot
+)
+
+init() {
+	setup(defBloomSlot, defBloomCapacity, defBloomFPR)
+}
+
+// setup will setup the bloom filter.
+func setup(slot int, capacity int, fpr float64) {
 	saltfilter = NewBloomRing(slot, capacity, fpr)
 }
 

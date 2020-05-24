@@ -36,11 +36,6 @@ type config struct {
 	Port     int    `env:"PORT,required"`
 	ssPort   int
 
-	// Bloom config.
-	BloomCapacity int     `env:"BLOOM_CAPACITY" envDefault:"1000000"`
-	BloomFPR      float64 `env:"BLOOM_FPR" envDefault:"0.000001"`
-	BloomSlot     int     `env:"BLOOM_SLOT" envDefault:"10"`
-
 	// Debug
 	Verbose bool `env:"VERBOSE" envDefault:"false"`
 }
@@ -50,6 +45,8 @@ func main() {
 	if err := configure(); err != nil {
 		log.Fatal(err)
 	}
+
+	saltstack.
 
 	// Start v2ray.
 	if err := cfg.startV2Ray(); err != nil {
