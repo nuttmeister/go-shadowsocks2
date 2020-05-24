@@ -26,8 +26,8 @@ var cfg *config
 // Config contains the programs config.
 type config struct {
 	// General
-	Host    string `env:"HOST" required:"true"`
-	Verbose bool   `env:"VERBOSE" default:"false"`
+	FullHost string `env:"FULL_HOST" required:"true"`
+	Verbose  bool   `env:"VERBOSE" default:"false"`
 
 	// Shadowsocks config.
 	Cipher   string `env:"SS_CIPHER" required:"true"`
@@ -101,6 +101,6 @@ func (cfg *config) startV2Ray() error {
 	}
 
 	// Start the plugin.
-	opts := fmt.Sprintf(v2rayOpts, cfg.Host, cfg.V2RayPort, loglevel)
+	opts := fmt.Sprintf(v2rayOpts, cfg.FullHost, cfg.V2RayPort, loglevel)
 	return startPlugin(v2ray, opts, cfg.V2RayPort, cfg.Port)
 }
