@@ -46,8 +46,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	saltstack.
-
 	// Start v2ray.
 	if err := cfg.startV2Ray(); err != nil {
 		log.Fatal(err)
