@@ -9,7 +9,7 @@ const (
 	defBloomSlot     = 10       // Default Slot
 )
 
-init() {
+func init() {
 	setup(defBloomSlot, defBloomCapacity, defBloomFPR)
 }
 
