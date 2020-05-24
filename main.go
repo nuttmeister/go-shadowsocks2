@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/codingconcepts/env"
+	"github.com/caarlos0/env/v6"
 	"github.com/nuttmeister/go-shadowsocks2/core"
 )
 
@@ -30,19 +30,19 @@ var cfg *config
 // Config contains the programs config.
 type config struct {
 	// General
-	FullHost string `env:"FULL_HOST" required:"true"`
-	Cipher   string `env:"CIPHER" required:"true"`
-	Password string `env:"PASSWORD" required:"true"`
-	Port     int    `env:"PORT" required:"true"`
+	FullHost string `env:"FULL_HOST,required"`
+	Cipher   string `env:"CIPHER,required"`
+	Password string `env:"PASSWORD,required"`
+	Port     int    `env:"PORT,required"`
 	ssPort   int
 
 	// Bloom config.
-	BloomCapacity int     `env:"BLOOM_CAPACITY" default:1000000`
-	BloomFPR      float64 `env:"BLOOM_FPR" default:0.000001`
-	BloomSlot     int     `env:"BLOOM_SLOT" default:10`
+	BloomCapacity int     `env:"BLOOM_CAPACITY" envDefault:"1000000"`
+	BloomFPR      float64 `env:"BLOOM_FPR" envDefault:"0.000001"`
+	BloomSlot     int     `env:"BLOOM_SLOT" envDefault:"10"`
 
 	// Debug
-	Verbose bool `env:"VERBOSE" default:false`
+	Verbose bool `env:"VERBOSE" envDefault:"false"`
 }
 
 func main() {
@@ -76,7 +76,7 @@ func main() {
 // Returns *config and error.
 func configure() error {
 	cfg = &config{}
-	if err := env.Set(&cfg); err != nil {
+	if err := env.Parse(cfg); err != nil {
 		return err
 	}
 
