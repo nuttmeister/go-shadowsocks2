@@ -52,7 +52,7 @@ func main() {
 	}
 
 	// Start v2ray.
-	if err := cfg.startV2Ray(ssPort); err != nil {
+	if err := cfg.startV2Ray(); err != nil {
 		log.Fatal(err)
 	}
 
@@ -63,7 +63,7 @@ func main() {
 	}
 
 	// Start the tcp listener.
-	go tcpRemote(ssPort, ciph.StreamConn)
+	go tcpRemote(cfg.ssPort, ciph.StreamConn)
 
 	// Listen for exit and error to quit.
 	sigCh := make(chan os.Signal, 1)
@@ -91,7 +91,7 @@ func configure() error {
 
 // plugin will start any configured plugins.
 // Returns error.
-func (cfg *config) startV2Ray(ssPort int) error {
+func (cfg *config) startV2Ray() error {
 	// Set loglevel to none or debug.
 	loglevel := "none"
 	if cfg.Verbose {
@@ -100,5 +100,5 @@ func (cfg *config) startV2Ray(ssPort int) error {
 
 	// Start the plugin.
 	opts := fmt.Sprintf(v2rayOpts, cfg.FullHost, cfg.Port, loglevel)
-	return startPlugin(v2ray, opts, cfg.Port, ssPort)
+	return startPlugin(v2ray, opts, cfg.Port, cfg.ssPort)
 }
