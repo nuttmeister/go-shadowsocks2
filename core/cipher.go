@@ -67,9 +67,7 @@ func PickCipher(name string, password string) (Cipher, error) {
 	}
 
 	if choice, ok := aeadList[name]; ok {
-		if len(key) == 0 {
-			key = kdf(password, choice.KeySize)
-		}
+		key = kdf(password, choice.KeySize)
 		if len(key) != choice.KeySize {
 			return nil, shadowaead.KeySizeError(choice.KeySize)
 		}
@@ -86,12 +84,6 @@ func (aead *aeadCipher) StreamConn(c net.Conn) net.Conn { return shadowaead.NewC
 func (aead *aeadCipher) PacketConn(c net.PacketConn) net.PacketConn {
 	return shadowaead.NewPacketConn(c, aead)
 }
-
-// dummy cipher does not encrypt
-type dummy struct{}
-
-func (dummy) StreamConn(c net.Conn) net.Conn             { return c }
-func (dummy) PacketConn(c net.PacketConn) net.PacketConn { return c }
 
 // key-derivation function from original Shadowsocks
 func kdf(password string, keyLen int) []byte {
